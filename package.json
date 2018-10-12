@@ -1,0 +1,14 @@
+{
+  "name": "vending-machine",
+  "version": "1.0.0",
+  "license": "MIT",
+  "bin": {
+    "vending-machine": "/usr/local/bin/vending-machine"
+  },
+  "scripts": {},
+  "devDependencies": {},
+  "dependencies": {},
+  "main": "index.js",
+  "author": "Michael Bush",
+  "description": ""
+}
