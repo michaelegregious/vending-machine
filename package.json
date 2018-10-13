@@ -7,8 +7,11 @@
   },
   "scripts": {},
   "devDependencies": {},
-  "dependencies": {},
-  "main": "index.js",
+  "dependencies": {
+    "chalk": "^2.4.1",
+    "figlet": "^1.2.1"
+  },
+  "main": "app.js",
   "author": "Michael Bush",
   "description": ""
 }
