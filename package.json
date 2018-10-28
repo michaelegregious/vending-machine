@@ -5,11 +5,16 @@
   "bin": {
     "vending-machine": "/usr/local/bin/vending-machine"
   },
-  "scripts": {},
+  "scripts": {
+    "test": "./node_modules/.bin/mocha -w --reporter spec"
+  },
   "devDependencies": {},
   "dependencies": {
+    "chai": "^4.2.0",
     "chalk": "^2.4.1",
-    "figlet": "^1.2.1"
+    "figlet": "^1.2.1",
+    "mocha": "^5.2.0",
+    "ora": "^3.0.0"
   },
   "main": "app.js",
   "author": "Michael Bush",
