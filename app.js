@@ -1,6 +1,5 @@
-const Transaction = require('./transaction');
+const { Transaction } = require('./transaction');
 const menu = require('./menu');
-const ora = require('ora');
 
 module.exports = () => {
   const transaction = new Transaction();
@@ -16,14 +15,6 @@ module.exports = () => {
   //Event listener for user input
   process.stdin.on('data', data => {
     const cmd = data.toString().trim();
-    let result = transaction.userInput(cmd);
-    const spinner = ora('    KA-CHUNK').start();
-
-    setTimeout(() => {
-      spinner.text = `    ${result}`;
-      spinner.color = 'green';
-      spinner.succeed();
-      process.stdout.write('Please Insert Coins > ');
-    }, 500);
+    transaction.userInput(cmd);
   });
 };

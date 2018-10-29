@@ -1,8 +1,6 @@
 'use strict';
 const fs = require('fs');
-const chalk = require('chalk');
-const Output = require('./user-output');
-const output = new Output();
+const output = require('./user-output');
 
 class Transaction {
   constructor() {
@@ -11,22 +9,20 @@ class Transaction {
 
   userInput(input) {
     switch (input) {
-      case 'Nickel': {
+      case 'Nickel':
         this.totalInserted += 5;
         addToCoinBank('Nickel');
-        userOutput('Nickel');
+        output.coinInserted(this.totalInserted);
         break;
-      }
-      case 'Dime': {
+      case 'Dime':
         this.totalInserted += 10;
         addToCoinBank('Dime');
-        userOutput('Dime');
+        output.coinInserted(this.totalInserted);
         break;
-      }
       case 'Quarter':
         this.totalInserted += 25;
         addToCoinBank('Quarter');
-        userOutput('Quarter');
+        output.coinInserted(this.totalInserted);
         break;
       case 'Cola':
         return this.purchaseItem('Cola', 100);
@@ -38,7 +34,7 @@ class Transaction {
         return this.purchaseItem('Candy', 65);
         break;
       default:
-        return `Invalid Input! \n    Please insert Nickel, Dime or Quarter!`;
+        output.invalidInput();
         break;
     }
   }
@@ -46,15 +42,14 @@ class Transaction {
   purchaseItem(item, price) {
     if (this.totalInserted == price) {
       this.totalInserted = 0;
-      return `Here's your ${item}!\n    THANK YOU`;
+      output.dispenseItem(item);
     } else if (this.totalInserted > price) {
       let change = makeChange(this.totalInserted - price);
       returnCoins(change);
+      output.dispenseItem(item);
       this.totalInserted = 0;
-      return `Here's your ${item}!\n    THANK YOU`;
     } else {
-      let stillOwed = price - this.totalInserted;
-      return `Please insert $${(stillOwed / 100).toFixed(2)}`;
+      output.stillOwed(price, this.totalInserted);
     }
   }
 }
@@ -64,14 +59,14 @@ const makeChange = difference => {
   return _makeChangeHelper(difference, [25, 10, 5]);
 };
 
-const _makeChangeHelper = (amount, coins) => {
+const _makeChangeHelper = (amount, denoms) => {
   if (amount <= 0) {
     return [];
-  } else if (amount >= coins[0]) {
-    let remainder = amount - coins[0];
-    return [coins[0], ..._makeChangeHelper(remainder, coins)];
+  } else if (amount >= denoms[0]) {
+    let remainder = amount - denoms[0];
+    return [denoms[0], ..._makeChangeHelper(remainder, denoms)];
   } else {
-    return _makeChangeHelper(amount, coins.slice(1));
+    return _makeChangeHelper(amount, denoms.slice(1));
   }
 };
 
@@ -80,22 +75,22 @@ const returnCoins = coins => {
   coins.forEach(coin => {
     if (coin == 25) {
       dispenseFromCoinBank('Quarter');
-      outPutCoin('Quarter');
+      output.returnCoin('Quarter');
     }
     if (coin == 10) {
       dispenseFromCoinBank('Dime');
-      outPutCoin('Dime');
+      output.returnCoin('Dime');
     }
     if (coin == 5) {
       dispenseFromCoinBank('Nickel');
-      outPutCoin('Nickel');
+      output.returnCoin('Nickel');
     }
   });
 };
 
 const addToCoinBank = coin => {
   const data = fs.readFileSync('coin-bank.json');
-  const coinBank = JSON.parse(data);
+  let coinBank = JSON.parse(data);
   checkCoinBank(coin, coinBank);
   coinBank[coin]++;
   coinBank = JSON.stringify(coinBank, null, 2);
@@ -106,7 +101,7 @@ const addToCoinBank = coin => {
 
 const dispenseFromCoinBank = coin => {
   const data = fs.readFileSync('coin-bank.json');
-  const coinBank = JSON.parse(data);
+  let coinBank = JSON.parse(data);
   checkCoinBank(coin, coinBank);
   coinBank[coin]--;
   coinBank = JSON.stringify(coinBank, null, 2);
@@ -116,12 +111,7 @@ const dispenseFromCoinBank = coin => {
 };
 
 const checkCoinBank = (coin, coinBank) => {
-  if (coinBank[coin] > 0) {
-    coinBank[coin]--;
-  } else {
-    throw `Coin bank is out of ${coin}s!`;
-  }
-  return;
+  if (coinBank[coin] <= 0) throw `Coin bank is out of ${coin}s!`;
 };
 
 const test = argument => {

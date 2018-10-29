@@ -13,11 +13,46 @@ describe('Test function', function() {
   });
 });
 
-xdescribe('Transaction Class', function() {
-  describe('dispenseCoin', function() {
-    it('should return correct coin values when called', function() {
-      const result = fake('Quarter');
-      console.log('I am here', result);
+const captureStream = stream => {
+  var oldWrite = stream.write;
+  var buff = '';
+  stream.write = function(chunk, encoding, callback) {
+    buff += chunk.toString(); // chunk is a String or Buffer
+    oldWrite.apply(stream, arguments);
+  };
+  return {
+    unhook: function() {
+      stream.write = oldWrite;
+    },
+    captured: function() {
+      return buf;
+    }
+  };
+};
+
+describe('The Transaction Class tracks customer input', function() {
+  describe('totalInserted', function() {
+    let transaction;
+
+    beforeEach(() => {
+      transaction = new Transaction();
     });
+
+    it('should start at zero', function() {
+      transaction.totalInserted.should.equal(0);
+    });
+
+    it('can be updated by inserting coins', function() {
+      transaction.userInput('Dime');
+      transaction.totalInserted.should.equal(10);
+    });
+  });
+  describe('purchaseItem', function() {
+    let transaction;
+
+    beforeEach(() => {
+      transaction = new Transaction();
+    });
+    it('takes an item and a price and returns an outcome', function() {});
   });
 });
